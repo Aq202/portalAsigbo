@@ -95,7 +95,6 @@ const createAccessToken = async ({
 
 const loginController = async (req, res) => {
   const { user, password } = req.body;
-
   const session = await connection.startSession();
 
   try {
@@ -121,6 +120,7 @@ const loginController = async (req, res) => {
     });
 
     await session.commitTransaction();
+    console.log('login 1');
 
     res.send({ accessToken });
   } catch (ex) {
