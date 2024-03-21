@@ -11,8 +11,8 @@
     "dev": "cross-env NODE_ENV= nodemon ./bin/www.js",
     "dev-production": "cross-env NODE_ENV=production nodemon ./bin/www.js",
     "production": "export NODE_ENV=production && pm2 start ./bin/www.js --name asigboApp --update-env",
-    "qa": "export NODE_ENV=qa && pm2 start ./bin/www.js --name asigboApp-qa --update-env",
-    "dev-qa": "cross-env NODE_ENV=qa nodemon ./bin/www.js",
+    "qa": "export DEBUG=express:* && NODE_ENV=qa && pm2 start ./bin/www.js --name asigboApp-qa --update-env",
+    "dev-qa": "cross-env DEBUG=express:* && NODE_ENV=qa nodemon ./bin/www.js",
     "lint": "eslint ./**/*.js"
   },
   "repository": {
