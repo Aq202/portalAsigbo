@@ -127,6 +127,8 @@ const loginController = async (req, res) => {
     await errorSender({
       res, ex, defaultError: 'Ocurrió un error al intentar loggearse.', session,
     });
+  } finally {
+    session.endSession();
   }
 };
 
