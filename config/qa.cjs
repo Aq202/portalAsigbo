@@ -1,6 +1,6 @@
 module.exports = {
   host: 'https://asigbo.org',
   dbConnectionUri: process.env.PROD_DB_CONNECTION_URI,
-  allowInsecureConnections: false,
+  allowInsecureConnections: true,
   port: 5000,
 };
