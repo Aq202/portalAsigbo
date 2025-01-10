@@ -27,6 +27,7 @@ const paymentSubSchema = Schema({
   amount: { type: Number, required: true },
   limitDate: { type: Date, required: true },
   description: { type: String, required: true },
+  treasurer: { type: [userSubSchema], required: true },
 });
 
 const PaymentSchema = model('payment', paymentSchema);

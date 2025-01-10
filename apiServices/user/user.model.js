@@ -164,6 +164,13 @@ const updateUserInAllDependencies = async ({ user, session }) => {
     { session, multi: true },
   );
 
+  // Tesorero en lista de tesoreros en documento payment embedded en asignación de pago
+  await PaymentAssignmentSchema.updateMany(
+    { 'payment.treasurer._id': user._id },
+    { $set: { 'payment.treasurer.$': user } },
+    { session, multi: true },
+  );
+
   // Tesorero en asignación de pago
   await PaymentAssignmentSchema.updateMany(
     { 'treasurer._id': user._id },
