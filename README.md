@@ -687,6 +687,7 @@
 - **/payment**
 
   Método: post
+
   Acceso: Admin
 
   Permite crear un pago general para un grupo de promociones dado.
@@ -700,6 +701,17 @@
   - treasurer: Arreglo de ID's de usuarios que figurarán como tesoreros del pago. Son los únicos encargados de aprobar un pago determinado.
   - promotion: Promoción (año) o grupo de promociones student, graduate, chick (revisar constantes)
 
+- **/payment**
+
+  Método: get
+  
+  Acceso: Admin
+
+  Permite obtener el listado de pagos generales creados ordenados según su fecha límite de forma 
+  descendente.
+
+  Query Params (?params):
+  - page: Página a consultar. Empieza por cero. Si no se proporciona devuelve toda la lista.
 
 - **/payment/activity**
 

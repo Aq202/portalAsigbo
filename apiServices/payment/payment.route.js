@@ -9,6 +9,7 @@ import {
   createActivityPaymentController,
   createGeneralPaymentController,
   deletePaymentController,
+  getGeneralPaymentsListController,
   getPaymentAssignmentController,
   getPaymentAssignmentsListController,
   getPaymentController,
@@ -38,6 +39,9 @@ paymentRouter.post(
   validateBody(createPaymentSchema),
   createGeneralPaymentController,
 );
+
+paymentRouter.get('/', ensureAdminAuth, getGeneralPaymentsListController);
+
 paymentRouter.post(
   '/activity',
   ensureAreaResponsibleAuth,

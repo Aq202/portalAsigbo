@@ -389,6 +389,14 @@ const verifyIfUserHasPaymentAssignments = async ({ idUser, session }) => {
   return payAssignments.length > 0;
 };
 
+const getGeneralPaymentsList = async ({ page }) => {
+  const payments = await PaymentSchema.find({ activityPayment: { $ne: true } })
+    .sort({ limitDate: -1, _id: -1 })
+    .skip(page * consts.resultsNumberPerPage)
+    .limit(consts.resultsNumberPerPage);
+  return multiplePaymentDto(payments);
+};
+
 export {
   createPayment,
   assignPaymentToUsers,
@@ -409,4 +417,5 @@ export {
   getPaymentAssignments,
   hasPaymentsAsTreasurer,
   verifyIfUserHasPaymentAssignments,
+  getGeneralPaymentsList,
 };

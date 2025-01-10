@@ -23,6 +23,7 @@ import {
   verifyIfUserIsTreasurer,
   hasPaymentsAsTreasurer,
   getPaymentsWhereUserIsTreasurer,
+  getGeneralPaymentsList,
 } from './payment.model.js';
 import exists from '../../utils/exists.js';
 import compareObjectId from '../../utils/compareObjectId.js';
@@ -588,6 +589,23 @@ const getPaymentsWhereUserIsTreasurerController = async (req, res) => {
   }
 };
 
+const getGeneralPaymentsListController = async (req, res) => {
+  try {
+    const { page } = req.query;
+    const result = await getGeneralPaymentsList({ page });
+
+    if (result === null || result.length === 0) throw new CustomError('No se encontraron resultados.', 404);
+
+    res.send(result);
+  } catch (ex) {
+    await errorSender({
+      res,
+      ex,
+      defaultError: 'Ocurrio un error al obtener pagos generales.',
+    });
+  }
+};
+
 export {
   createGeneralPaymentController,
   completePaymentController,
@@ -601,4 +619,5 @@ export {
   getPaymentAssignmentController,
   getPaymentAssignmentsListController,
   getPaymentsWhereUserIsTreasurerController,
+  getGeneralPaymentsListController,
 };
