@@ -9,6 +9,7 @@ import exists from '../../utils/exists.js';
 import { multiplePaymentDto, singlePaymentDto } from './payment.dto.js';
 import { multiplePaymentAssignmentDto, singlePaymentAssignmentDto } from './paymentAssignment.dto.js';
 import getUTCDate from '../../utils/getUTCDate.js';
+import getSearchRegex from '../../utils/getSearchRegex.js';
 
 /**
  *
@@ -322,9 +323,14 @@ const verifyIfUserIsTreasurer = async ({ idPayment, idUser, session }) => {
  * @param  idPayment Filtrar solo las asignaciones de un pago en específico
  * @param  state 0: pagos no completados, 1: pagos completados pero no confirmados,
  *  2: pagos confirmados, 3: pagos atrasados. Cualquier otro valor muestra la lista completa.
+ * @param promotion filtrar por año de promoción exacto
+ * @param promotionMin filtrar por año de promoción mínimo
+ * @param promotionMax filtrar por año de promoción máximo
+ * @param page Página a consultar (paginación). Inicia por cero. Si no se proporciona se devuelve la lista completa.
+ * @param search Búsqueda por el nombre del usuario asignado
  */
 const getPaymentAssignments = async ({
-  idUser, idPayment, state, promotion, promotionMin, promotionMax, page, session,
+  idUser, idPayment, state, promotion, promotionMin, promotionMax, page, session, search,
 }) => {
   const query = {};
 
@@ -357,10 +363,25 @@ const getPaymentAssignments = async ({
       break;
   }
 
-  // agregar filtro por promoción
+  // Agregar filtro por promoción
   if (exists(promotion) && !exists(promotionMin) && !exists(promotionMax)) query['user.promotion'] = { $eq: promotion };
   if (exists(promotionMin)) query['user.promotion'] = { $gte: promotionMin };
   if (exists(promotionMax)) query['user.promotion'] = { $lte: promotionMax };
+
+  // Agregar filtro de búsqueda por nombre completo
+  if (exists(search)) {
+    const searchRegex = new RegExp(getSearchRegex(search), 'i');
+    query.$or = [
+      {
+        $expr: {
+          $regexMatch: {
+            input: { $concat: ['$user.name', ' ', '$user.lastname'] },
+            regex: searchRegex,
+          },
+        },
+      },
+    ];
+  }
 
   // Obtener total de resultados (sin paginación)
   const usersCount = await PaymentAssignmentSchema.countDocuments(query);

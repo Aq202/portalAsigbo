@@ -834,6 +834,7 @@
 - **/payment/:idPayment/assignment**
 
   Método: Get
+
   Acceso: Admin, encargado del área asigbo padre o tesorero del pago.
 
   Permite obtener el listado de asignaciones de un pago en específico.
@@ -849,7 +850,7 @@
       3: pagos atrasados. Cualquier otro valor muestra la lista completa.
   - page: Página a consultar. Empieza por cero. Si no se proporciona devuelve toda la lista.
   - promotion: año de promoción de estudiantes a mostrar. También permite el nombre del grupo de becados.
-
+  - search: texto a buscar en el nombre del usuario.
 
 - **/payment/treasurer**
 

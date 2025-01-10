@@ -527,7 +527,9 @@ const getPaymentAssignmentController = async (req, res) => {
 const getPaymentAssignmentsListController = async (req, res) => {
   const { idPayment } = req.params;
   const { role, id: sessionIdUser } = req.session;
-  const { state, page, promotion } = req.query;
+  const {
+    state, page, promotion, search,
+  } = req.query;
   try {
     // Validar acceso a asignaciones de pago
     const isAdmin = role?.includes(consts.roles.admin);
@@ -558,7 +560,7 @@ const getPaymentAssignmentsListController = async (req, res) => {
 
     // Obtener asignaciones de pago
     const result = await getPaymentAssignments({
-      idPayment, state, page, promotion, promotionMin, promotionMax,
+      idPayment, state, page, promotion, promotionMin, promotionMax, search,
     });
     if (result === null) throw new CustomError('No se encontraron resultados.', 404);
     res.send(result);
