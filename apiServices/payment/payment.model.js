@@ -411,11 +411,46 @@ const verifyIfUserHasPaymentAssignments = async ({ idUser, session }) => {
 };
 
 const getGeneralPaymentsList = async ({ page }) => {
-  const payments = await PaymentSchema.find({ activityPayment: { $ne: true } })
+  const filter = { activityPayment: { $ne: true } };
+  // Contar el número total de páginas
+  const totalPayments = await PaymentSchema.countDocuments(filter);
+  const pages = Math.ceil(totalPayments / consts.resultsNumberPerPage);
+
+  const payments = await PaymentSchema.find(filter)
     .sort({ limitDate: -1, _id: -1 })
     .skip(page * consts.resultsNumberPerPage)
     .limit(consts.resultsNumberPerPage);
-  return multiplePaymentDto(payments);
+  return { pages, result: multiplePaymentDto(payments) };
+};
+
+/**
+ * Devuelve el número de pagos pendientes y el monto total de los mismos.
+ * @param idUser Id del usuario
+ * @param session
+ * @returns Objeto con las propiedades num y totalAmount
+ */
+const getTotalOutstandingPayments = async ({ idUser, session }) => {
+  const pipeline = [
+    {
+      $match: {
+        'user._id': new ObjectId(idUser),
+        completed: false,
+        confirmed: false,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        num: { $sum: 1 }, // número de pagos pendientes
+        totalAmount: { $sum: '$payment.amount' }, // Suma total del monto
+      },
+    },
+  ];
+
+  const result = await PaymentAssignmentSchema.aggregate(pipeline).session(session);
+  if (!result || result.length === 0) return { num: 0, totalAmount: 0 };
+
+  return { num: result[0].num, totalAmount: result[0].totalAmount };
 };
 
 export {
@@ -439,4 +474,5 @@ export {
   hasPaymentsAsTreasurer,
   verifyIfUserHasPaymentAssignments,
   getGeneralPaymentsList,
+  getTotalOutstandingPayments,
 };

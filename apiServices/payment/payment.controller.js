@@ -24,6 +24,7 @@ import {
   hasPaymentsAsTreasurer,
   getPaymentsWhereUserIsTreasurer,
   getGeneralPaymentsList,
+  getTotalOutstandingPayments,
 } from './payment.model.js';
 import exists from '../../utils/exists.js';
 import compareObjectId from '../../utils/compareObjectId.js';
@@ -445,7 +446,9 @@ const getUserPaymentAssignmentsController = async (req, res) => {
 
     const result = await getPaymentAssignments({ idUser, state, page });
     if (result === null) throw new CustomError('No se encontraron resultados.', 404);
-    res.send(result);
+
+    const { num, totalAmount } = await getTotalOutstandingPayments({ idUser });
+    res.send({ ...result, outstandingPayments: { num, totalAmount } });
   } catch (ex) {
     await errorSender({
       res,
@@ -594,11 +597,11 @@ const getPaymentsWhereUserIsTreasurerController = async (req, res) => {
 const getGeneralPaymentsListController = async (req, res) => {
   try {
     const { page } = req.query;
-    const result = await getGeneralPaymentsList({ page });
+    const { pages, result } = await getGeneralPaymentsList({ page });
 
     if (result === null || result.length === 0) throw new CustomError('No se encontraron resultados.', 404);
 
-    res.send(result);
+    res.send({ pages, result });
   } catch (ex) {
     await errorSender({
       res,
