@@ -36,12 +36,14 @@ import { assignPaymentToActivity, getActivity, getActivityByPaymentId } from '..
 import { validateResponsible as validateAsigboAreaResponsible } from '../asigboArea/asigboArea.model.js';
 import { addPaymentsToActivityAssignments, getActivityAssignedUsers } from '../activityAssignment/activityAssignment.model.js';
 
-const savePaymentVoucherPicture = async ({ file, idPayment, idUser }) => {
+const savePaymentVoucherPicture = async ({
+  file, idPayment, idUser, imageIndex,
+}) => {
   const filePath = `${global.dirname}/files/${file.fileName}`;
 
   // subir archivos
 
-  const imageId = `${idPayment}/${idUser}`;
+  const imageId = `${idPayment}/${idUser}/${imageIndex}`;
   const fileKey = `${consts.bucketRoutes.paymentVoucher}/${imageId}`;
 
   try {
@@ -178,10 +180,11 @@ const completePaymentController = async (req, res) => {
 
     // Subir archivos de vouchers
     voucherKeys = await Promise.all(
-      voucherFiles.map((file) => savePaymentVoucherPicture({
+      voucherFiles.map((file, index) => savePaymentVoucherPicture({
         file,
         idPayment: paymentAssignment.payment.id,
         idUser: paymentAssignment.user.id,
+        imageIndex: index,
       })),
     );
     await completePayment({ idPaymentAssignment, voucherKeys, session });
